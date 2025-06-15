@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  pgvector:
+    image: ankane/pgvector
+    container_name: local_search_bot_pgvector
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: local_search_bot_db
+      POSTGRES_USER: local_search_bot_user
+      POSTGRES_PASSWORD: local_search_bot_pass
+    ports:
+      - "5444:5432"
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  pgvector_data:
