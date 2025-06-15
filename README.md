@@ -1,4 +1,4 @@
-# Local Search Bot
+# Site Whisperer
 
 A local chatbot that becomes an expert on any website by scraping its content and using local LLM models through Ollama. This project demonstrates how to build a completely local AI system without depending on external APIs like OpenAI or Claude.
 
@@ -44,7 +44,7 @@ Node.js 18+ and Yarn package manager.
 1. **Clone and install dependencies:**
 ```bash
 git clone <repository-url>
-cd local-search-bot
+cd site-whisperer
 yarn install
 ```
 

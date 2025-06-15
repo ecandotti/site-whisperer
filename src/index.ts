@@ -1,8 +1,8 @@
-import { askUserQuestion } from './chat';
-import * as readline from 'readline';
-import { extractPageText } from './scrape';
-import { extractUrlsFromSitemap } from './sitemap';
-import { processAndStore } from './embed';
+import { askUserQuestion } from '@/chat';
+import readline from 'node:readline';
+import { extractPageText } from '@/scrape';
+import { extractUrlsFromSitemap } from '@/sitemap';
+import { processAndStore } from '@/embed';
 
 async function main() {
   const rl = readline.createInterface({
@@ -11,7 +11,7 @@ async function main() {
   });
 
   console.log('🔗 Please enter a URL or sitemap URL to scrape:');
-  
+
   const userInput = await new Promise<string>((resolve) => {
     rl.question('', (answer) => {
       resolve(answer.trim());
@@ -22,17 +22,19 @@ async function main() {
 
   try {
     const urls = await extractUrlsFromSitemap(userInput);
-    
+
     if (urls.length > 0) {
       console.log(`📋 Sitemap detected. Found ${urls.length} URLs to process.`);
-      
+
       for (let i = 0; i < urls.length; i++) {
         const url = urls[i];
         console.log(`⏳ Processing ${i + 1}/${urls.length}: ${url}`);
-        
+
         try {
-          const { text } = await extractPageText(url);
-          await processAndStore(url, text);
+          const result = await extractPageText(url);
+          if (result) {
+            await processAndStore(url, result.text);
+          }
         } catch (err) {
           console.error(`❌ Error processing ${url}:`, err);
         }
@@ -40,12 +42,14 @@ async function main() {
     } else {
       throw new Error('No URLs found in sitemap');
     }
-  } catch (err) {
+  } catch (_err) {
     console.log('🔗 Treating as single URL...');
-    
+
     try {
-      const { text } = await extractPageText(userInput);
-      await processAndStore(userInput, text);
+      const result = await extractPageText(userInput);
+      if (result) {
+        await processAndStore(userInput, result.text);
+      }
       console.log('✅ Single URL processed successfully.');
     } catch (error) {
       console.error('❌ Error processing URL:', error);
